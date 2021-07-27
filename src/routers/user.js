@@ -18,13 +18,13 @@ router.post('/users', async (req, res) => {
         sendWelcomeEmail(user.email, user.name)
         res.status(201).send({ user, token })
     } catch(e) {
-        res.status(400).send(e)
+        res.status(400).send({ error: e })
     }
 
     // user.save().then(() => {
     //     res.status(201).send(user)
     // }).catch((e) => {
-    //     res.status(400).send(e)
+    //     res.status(400).send({ error: e })
     // })
 })
 
@@ -36,7 +36,7 @@ router.post('/users/login', async (req, res) => {
         await user.save()
         res.send({ user, token })
     } catch(e) {
-        res.status(400).send(e)
+        res.status(400).send({ error: e })
     }
 })
 
@@ -46,7 +46,7 @@ router.post('/users/logout', auth, async (req, res) => {
         await req.user.save()
         res.send(req.user)
     } catch(e) {
-        res.status(500).send(e)
+        res.status(500).send({ error: e })
     }
 })
 
@@ -54,10 +54,10 @@ router.post('/users/logoutAll', auth, async (req, res) => {
     try {
         req.user.tokens = []
         await req.user.save()
-        console.log("yaha aa raha");
+        // console.log("yaha aa raha");
         res.send(req.user)
     } catch(e) {
-        res.status(500).send(e)
+        res.status(500).send({ error: e })
     }
 })
 
@@ -65,13 +65,13 @@ router.get('/users/me', auth, async (req, res) => {
     try {
         res.send(req.user)
     } catch(e) {
-        res.status(500).send(e)
+        res.status(500).send({ error: e })
     } 
 
     // User.find({}).then((users) => {
     //     res.send(users)
     // }).catch((e) => {
-    //     res.status(500).send(e)
+    //     res.status(500).send({ error: e })
     // })
 })
 
@@ -83,7 +83,7 @@ router.get('/users/me', auth, async (req, res) => {
 //         }
 //         res.send(user)
 //     } catch(e) {
-//         res.status(500).send(e)
+//         res.status(500).send({ error: e })
 //     }
 
 //     // User.findById(req.params.id).then((user) => {
@@ -92,7 +92,7 @@ router.get('/users/me', auth, async (req, res) => {
 //     //     }
 //     //     res.send(user)
 //     // }).catch((e) => {
-//     //     res.status(500).send(e)
+//     //     res.status(500).send({ error: e })
 //     // })
 // })
 
@@ -115,7 +115,7 @@ router.patch('/users/me', auth, async (req, res) => {
         // }
         res.send(req.user)
     } catch(e) {
-        res.status(500).send(e)
+        res.status(500).send({ error: e })
     }
 })
 
@@ -126,7 +126,7 @@ router.delete('/users/me', auth, async (req, res) => {
         accountDeleteEmail(req.user.email, req.user.name)
         res.send(req.user)
     } catch(e) {
-        res.status(500).send(e)
+        res.status(500).send({ error: e })
     }
 })
 
@@ -142,7 +142,7 @@ const upload = multer({
     }
 })
 
-router.post('/users/me/avatar', auth, upload.single('imagefilename'), async(req, res) => {
+router.post('/users/me/avatar', auth, upload.single('imagename'), async(req, res) => {
     const buffer = await sharp(req.file.buffer).resize({ width: 300, height: 300 }).png().toBuffer()
     req.user.avatar = buffer
     await req.user.save()
@@ -157,7 +157,7 @@ router.delete('/users/me/avatar', auth, async (req, res) => {
         await req.user.save()
         res.send()
     } catch(e) {
-        res.status(404).send(e)
+        res.status(404).send({ error: e })
     }
 })
 
@@ -170,7 +170,7 @@ router.get('/users/:id/avatar', async (req, res) => {
         res.set('Content-Type', 'image/png')
         res.send(user.avatar)
     } catch(e) {
-        res.status(404).send(e)
+        res.status(404).send({ error: e })
     }
 })
 
